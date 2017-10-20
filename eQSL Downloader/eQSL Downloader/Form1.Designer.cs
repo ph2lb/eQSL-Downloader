@@ -28,15 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.tbUserName = new System.Windows.Forms.TextBox();
+            this.tbPassword = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.tbFolder = new System.Windows.Forms.TextBox();
+            this.btnStart = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.btnOpenFolder = new System.Windows.Forms.Button();
+            this.cbArchive = new System.Windows.Forms.CheckBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,21 +53,21 @@
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBox1
+            // tbUserName
             // 
-            this.textBox1.Location = new System.Drawing.Point(15, 145);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 0;
+            this.tbUserName.Location = new System.Drawing.Point(15, 145);
+            this.tbUserName.Name = "tbUserName";
+            this.tbUserName.Size = new System.Drawing.Size(100, 20);
+            this.tbUserName.TabIndex = 0;
             // 
-            // textBox2
+            // tbPassword
             // 
-            this.textBox2.Location = new System.Drawing.Point(15, 189);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.PasswordChar = '~';
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 1;
-            this.textBox2.UseSystemPasswordChar = true;
+            this.tbPassword.Location = new System.Drawing.Point(15, 189);
+            this.tbPassword.Name = "tbPassword";
+            this.tbPassword.PasswordChar = '~';
+            this.tbPassword.Size = new System.Drawing.Size(100, 20);
+            this.tbPassword.TabIndex = 1;
+            this.tbPassword.UseSystemPasswordChar = true;
             // 
             // label1
             // 
@@ -89,21 +89,21 @@
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(15, 228);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(260, 20);
-            this.textBox3.TabIndex = 5;
-            this.textBox3.Text = "c:\\eqsl\\";
+            this.tbFolder.Location = new System.Drawing.Point(15, 228);
+            this.tbFolder.Name = "textBox3";
+            this.tbFolder.Size = new System.Drawing.Size(260, 20);
+            this.tbFolder.TabIndex = 5;
+            this.tbFolder.Text = "c:\\eqsl\\";
             // 
-            // button2
+            // btnStart
             // 
-            this.button2.Location = new System.Drawing.Point(110, 254);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(78, 24);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "Start";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnStart.Location = new System.Drawing.Point(110, 254);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(78, 24);
+            this.btnStart.TabIndex = 6;
+            this.btnStart.Text = "Start";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // label3
             // 
@@ -114,25 +114,25 @@
             this.label3.TabIndex = 9;
             this.label3.Text = "Scripted by AC9HP";
             // 
-            // button1
+            // btnOpenFolder
             // 
-            this.button1.Location = new System.Drawing.Point(215, 254);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 24);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "Open Folder";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            this.btnOpenFolder.Location = new System.Drawing.Point(215, 254);
+            this.btnOpenFolder.Name = "btnOpenFolder";
+            this.btnOpenFolder.Size = new System.Drawing.Size(92, 24);
+            this.btnOpenFolder.TabIndex = 10;
+            this.btnOpenFolder.Text = "Open Folder";
+            this.btnOpenFolder.UseVisualStyleBackColor = true;
+            this.btnOpenFolder.Click += new System.EventHandler(this.btnOpenFolder_Click);
             // 
-            // checkBox1
+            // cbArchive
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(256, 192);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(62, 17);
-            this.checkBox1.TabIndex = 11;
-            this.checkBox1.Text = "Archive";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cbArchive.AutoSize = true;
+            this.cbArchive.Location = new System.Drawing.Point(256, 192);
+            this.cbArchive.Name = "cbArchive";
+            this.cbArchive.Size = new System.Drawing.Size(62, 17);
+            this.cbArchive.TabIndex = 11;
+            this.cbArchive.Text = "Archive";
+            this.cbArchive.UseVisualStyleBackColor = true;
             // 
             // menuStrip1
             // 
@@ -230,17 +230,17 @@
             this.ClientSize = new System.Drawing.Size(355, 320);
             this.Controls.Add(this.ckSaveCR);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.cbArchive);
+            this.Controls.Add(this.btnOpenFolder);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.tbFolder);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.tbPassword);
+            this.Controls.Add(this.tbUserName);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -259,17 +259,17 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox tbUserName;
+        private System.Windows.Forms.TextBox tbPassword;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox tbFolder;
+        private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button btnOpenFolder;
+        private System.Windows.Forms.CheckBox cbArchive;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;

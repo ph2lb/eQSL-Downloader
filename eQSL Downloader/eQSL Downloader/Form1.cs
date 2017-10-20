@@ -10,9 +10,7 @@ using System.Windows.Forms;
 using System.Web;
 using System.Net;
 using System.Collections.Specialized;
-
-
-
+using System.Threading;
 
 namespace eQSL_Downloader
 {
@@ -27,27 +25,27 @@ namespace eQSL_Downloader
         {
             if (Properties.Settings.Default.anchor.Trim().Length > 0 )
             {
-                textBox1.Text = BinaryToString(Properties.Settings.Default.anchor);
+                tbUserName.Text = BinaryToString(Properties.Settings.Default.anchor);
                 ckSaveCR.Checked = true;
             }
             if (Properties.Settings.Default.keyhole.Trim().Length > 0)
             {
-                textBox2.Text = BinaryToString(Properties.Settings.Default.keyhole);
+                tbPassword.Text = BinaryToString(Properties.Settings.Default.keyhole);
                 ckSaveCR.Checked = true;
             }
 
             try
             {
-                textBox3.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\IEN\\eQSL"; 
+                tbFolder.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\IEN\\eQSL"; 
             }
             catch (Exception ex)
             {
                 System.Console.WriteLine(ex.ToString());
-                textBox3.Text = "c:\\eQSL";
+                tbFolder.Text = "c:\\eQSL";
             }
-            if (System.IO.Directory.Exists(textBox3.Text))
+            if (System.IO.Directory.Exists(tbFolder.Text))
             {
-                int c = System.IO.Directory.GetFiles(textBox3.Text).Count();
+                int c = System.IO.Directory.GetFiles(tbFolder.Text).Count();
                 toolStripStatusLabel1.Text = "Cards downloaded: " + c.ToString();
 
             }
@@ -82,9 +80,9 @@ namespace eQSL_Downloader
         {
             if (ckSaveCR.Checked)
             {
-                string s = textBox2.Text;
-                Properties.Settings.Default.anchor = StringToBinary(textBox1.Text);
-                Properties.Settings.Default.keyhole = StringToBinary(textBox2.Text);
+                string s = tbPassword.Text;
+                Properties.Settings.Default.anchor = StringToBinary(tbUserName.Text);
+                Properties.Settings.Default.keyhole = StringToBinary(tbPassword.Text);
                 Properties.Settings.Default.Save();
             }
             else
@@ -96,7 +94,10 @@ namespace eQSL_Downloader
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        public Thread workerThread = null;
+        public Worker worker = null;
+
+        private void btnStart_Click(object sender, EventArgs e)
         {
             try
             {
@@ -105,128 +106,62 @@ namespace eQSL_Downloader
             catch (Exception ex)
             {
                 System.Console.WriteLine(ex.ToString());
-            }
-            
-            login();
-            if (System.IO.Directory.Exists(textBox3.Text))
-            {
-                int c = System.IO.Directory.GetFiles(textBox3.Text).Count();
-                toolStripStatusLabel1.Text = "Cards downloaded: " +
-                 c.ToString();
+            } 
 
-            }
+            worker = new Worker();
+            worker.Error = Error;
+            worker.Done = Done;
+            worker.Status = Status;
+            worker.CallSign = tbUserName.Text;
+            worker.PassWord = tbPassword.Text;
+            worker.StoragePath = tbFolder.Text;
+            worker.Archive = cbArchive.Checked;
 
+            workerThread = new Thread(worker.DoWork);
+            // Start the worker thread.
+            workerThread.Start();
+            btnStart.Enabled = false;
         }
 
-        void login()
+        private void Done(string result)
         {
-            var client = new CookieAwareWebClient();
-            client.Encoding = Encoding.UTF8;
-
-            // Post values
-
-            var values = new NameValueCollection();
-            values.Add("Callsign", this.textBox1.Text);
-            values.Add("EnteredPassword", this.textBox2.Text);
-            values.Add("Login", "Go");   //The button
-
-            // Logging in
-            client.UploadValues("http://www.eqsl.cc/qslcard/LoginFinish.cfm", values); // You may verify the result. It works with https :)
-
-            var html = "";
-           
-            // Download some secret page
-            if (checkBox1.Checked)
+            if (statusStrip1.InvokeRequired)
             {
-                html = client.DownloadString("http://www.eqsl.cc/qslcard/InBox.cfm?Archive=1&Reject=0");
-            } else
-            {
-                html = client.DownloadString("http://www.eqsl.cc/qslcard/InBox.cfm?Archive=0&Reject=0");
+                this.Invoke(new Action(() => Done(result)));
             }
-
-            if (html.IndexOf(@"eQSLs more than can be displayed on this screen") > -1)
+            else
             {
-                System.Windows.Forms.MessageBox.Show(@"You have too many cards.  You will need to wait for an updated version!");
-                return;
-            }
-           
-            //Console.Write(html);
-            //Form2 f2 = new Form2();
-            //f2.textBox1.Text = html;
-
-            //check for debug
-            //f2.Show();
-            int i = 0;
-            string mylist = parseDisplay(html);
-            foreach (string s in mylist.Split('|'))
-            {
-                if (s.Trim().Length == 0)
+                if (System.IO.Directory.Exists(tbFolder.Text))
                 {
-                    continue;
-
+                    int c = System.IO.Directory.GetFiles(tbFolder.Text).Count();
+                    toolStripStatusLabel1.Text = "Cards downloaded: " + c.ToString();
                 }
-                var h = client.DownloadString("http://www.eqsl.cc/qslcard/" + s);
-
-                string s1 = s.Substring(s.IndexOf("Callsign=") + 9);
-                string callsign = s1.Substring(0, s1.IndexOf("&"));
-
-                //System.Console.WriteLine(h);
-                h = h.Substring(h.IndexOf("img src="));
-                h = h.Substring(h.IndexOf("\"")+1);
-                h = h.Substring(0,h.IndexOf("\""));
-
-                if (!(System.IO.Directory.Exists(textBox3.Text)))
-                {
-                    System.IO.Directory.CreateDirectory(textBox3.Text);
-                }
-
-                string filename = System.IO.Path.Combine(textBox3.Text , callsign + "-" +  DateTime.Now.ToString("yyMMddmmssff") +  ".png");
-                //while (System.IO.File.Exists(filename))
-                //{ 
-                    
-                //}
-
-                client.DownloadFile("http://www.eqsl.cc" + h, filename);
-                i = i + 1;
-                //<CENTER>
-                //<img src="/CFFileServlet/_cf_image/_cfimg-632732702018634097.PNG" alt="" />
-                      //get call sign 
-                      // download page
-                      // parse image name 
-                      // download image 
-                      // save image as call sign...  if exists.. _1,_2 etc... 
+                btnStart.Enabled = true;
             }
-            System.Windows.Forms.MessageBox.Show("Download of "  + i.ToString() + " QSL cards Complete");
         }
-        string parseDisplay(string h)
+
+        private void Error(string error)
         {
-            string newString = "";
+            UpdateStatus("ERROR > " + error);
+        }
 
-            int i = h.IndexOf("DisplayeQSL.cfm");
-            
+        private void Status(string status)
+        {
+            UpdateStatus(status);
+        }
 
-            while( i > -1)
+        private void UpdateStatus(string status)
+        {
+            if (statusStrip1.InvokeRequired)
             {
-                h = h.Substring(i);
-                string urlString = h.Substring(0,h.IndexOf("'"));
-                h = h.Substring(15); // cut out current displayeQSL
-                i = h.IndexOf("DisplayeQSL.cfm");
-                newString = newString + urlString  + "|";
+                this.Invoke(new Action(() => UpdateStatus(status)));
             }
-
-            //foreach (string s in h.Split(new string[] {@"DisplayeQSL.cfm?Callsign"}, StringSplitOptions.RemoveEmptyEntries))
-            //{
-            //    newString = newString + "||";
-            //}
-
-            return newString;
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
-        }
+            else
+            {
+                toolStripStatusLabel1.Text = status;
+                System.Threading.Thread.Sleep(1);
+            }
+        } 
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
@@ -252,12 +187,13 @@ namespace eQSL_Downloader
             }
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void btnOpenFolder_Click(object sender, EventArgs e)
         {
             try
             {
-                System.Diagnostics.Process.Start(textBox3.Text); 
-            }catch (Exception ex)
+                System.Diagnostics.Process.Start(tbFolder.Text); 
+            }
+            catch (Exception ex)
             {
             
             }
@@ -278,18 +214,4 @@ namespace eQSL_Downloader
 
     }
 
-    public class CookieAwareWebClient : WebClient
-    {
-        private CookieContainer cookieContainer = new CookieContainer();
-
-        protected override WebRequest GetWebRequest(Uri address)
-        {
-            WebRequest request = base.GetWebRequest(address);
-            if (request is HttpWebRequest)
-            {
-                (request as HttpWebRequest).CookieContainer = cookieContainer;
-            }
-            return request;
-        }
-    }
 }
